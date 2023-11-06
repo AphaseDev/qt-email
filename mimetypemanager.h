@@ -34,6 +34,5 @@ private:
     QMap<QString, QString> mimeTypes;
 };
 
-}
 
 #endif // MIMETYPEMANAGER_H

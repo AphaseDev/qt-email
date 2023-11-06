@@ -23,6 +23,5 @@ struct EmailPrivate
     QList<QString> attachments;
 };
 
-}
 
 #endif // EMAILPRIVATE_H

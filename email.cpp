@@ -32,31 +32,33 @@ Email::Email(QObject*parent, const QString& mimeTypesPath) :
   */
 void Email::openInDefaultProgram()
 {
-    QString email = "Content-Type: multipart/alternative; boundary=\"BitshiftDynamicsMailerBoundary\"\r\n";
+    QString email = QStringLiteral("Content-Type: multipart/alternative; boundary=\"BitshiftDynamicsMailerBoundary\"\r\n");
 
     // Add sender information
 
 
     // Add receiver information
-    email.append("To: ");
+    email.append(QLatin1String("To: "));
     email.append(p.receiverAddress);
-    email.append("\r\n");
+    email.append(QLatin1String("\r\n"));
 
     // Add subject
-    email.append("Subject: ");
+    email.append(QLatin1String("Subject: "));
     email.append(p.subject);
-    email.append("\r\n");
+    email.append(QLatin1String("\r\n"));
 
     // Add mime version
-    email.append("Mime-Version: 1.0 BitshiftDynamics Mailer\r\n\r\n");
+    email.append(QLatin1String("Mime-Version: 1.0 BitshiftDynamics Mailer\r\n\r\n"));
+    // Field used by Microsoft Outlook Express to designate that a message is currently being authored
+    email.append(QLatin1String("X-Unsent:1"));
 
     // Add body
-    email.append("--BitshiftDynamicsMailerBoundary\r\n");
-    email.append("Content-Transfer-Encoding: quoted-printable\r\n");
-    email.append("Content-Type: text/plain;\r\n");
-    email.append("        charset=iso-8859-1\r\n\r\n");
+    email.append(QLatin1String("--BitshiftDynamicsMailerBoundary\r\n"));
+    email.append(QLatin1String("Content-Transfer-Encoding: quoted-printable\r\n"));
+    email.append(QLatin1String("Content-Type: text/plain;\r\n"));
+    email.append(QLatin1String("        charset=iso-8859-1\r\n\r\n"));
     email.append(p.messageText);
-    email.append("\r\n\r\n");
+    email.append(QLatin1String("\r\n\r\n"));
 
     // Add attachments
     foreach (QString filePath, p.attachments) {
@@ -76,23 +78,23 @@ void Email::openInDefaultProgram()
         QByteArray fileData = attachmentFile.readAll();
         attachmentFile.close();
 
-        email.append("\r\n--BitshiftDynamicsMailerBoundary\r\n");
-        email.append("Content-Type: multipart/mixed;\r\n");
-        email.append("        boundary=\"BitshiftDynamicsMailerBoundary\"\r\n\r\n");
+        email.append(QLatin1String("\r\n--BitshiftDynamicsMailerBoundary\r\n"));
+        email.append(QLatin1String("Content-Type: multipart/mixed;\r\n"));
+        email.append(QLatin1String("        boundary=\"BitshiftDynamicsMailerBoundary\"\r\n\r\n"));
 
-        email.append("--BitshiftDynamicsMailerBoundary\r\n");
-        email.append("Content-Disposition: inline;\r\n");
-        email.append("        filename=\"").append(fileName).append("\"\r\n");
-        email.append("Content-Type: ").append(mimeType).append(";\r\n");
-        email.append("        name=\"").append(fileName).append("\"\r\n");
-        email.append("Content-Transfer-Encoding: base64\r\n\r\n");
+        email.append(QLatin1String("--BitshiftDynamicsMailerBoundary\r\n"));
+        email.append(QLatin1String("Content-Disposition: inline;\r\n"));
+        email.append(QLatin1String("        filename=\"")).append(fileName).append(QLatin1String("\"\r\n"));
+        email.append(QLatin1String("Content-Type: ")).append(mimeType).append(QLatin1String(";\r\n"));
+        email.append(QLatin1String("        name=\"")).append(fileName).append(QLatin1String("\"\r\n"));
+        email.append(QLatin1String("Content-Transfer-Encoding: base64\r\n\r\n"));
 
-        email.append(fileData.toBase64());
+        email.append(QString::fromUtf8(fileData.toBase64()));
     }
 
 
     // Create temporary file and open it in the user's default email composer
-    QString tmpFilePath = QDir::tempPath().append(QString("/ComposedEmail-%1.eml").arg(QDateTime::currentDateTime().toTime_t()));
+    QString tmpFilePath = QDir::tempPath().append(QStringLiteral("/ComposedEmail-%1.eml").arg(QDateTime::currentDateTime().toSecsSinceEpoch()));
     QFile tmpFile(tmpFilePath);
     if (tmpFile.open(QIODevice::WriteOnly) == false) {
         qCritical() << "Failed opening temp file for email composing:" << tmpFilePath;
@@ -104,5 +106,5 @@ void Email::openInDefaultProgram()
     tmpFile.write(email.toLatin1());
     tmpFile.close();
 
-    emit composerOpened(QDesktopServices::openUrl(QUrl(tmpFilePath)));
+    emit composerOpened(QDesktopServices::openUrl(QUrl::fromLocalFile(tmpFilePath)));
 }

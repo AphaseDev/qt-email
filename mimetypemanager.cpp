@@ -30,18 +30,18 @@ MimeTypeManager::MimeTypeManager(const QString& filePath)
         QString currentLine = stream.readLine();
 
         // Ignore commented lines
-        if (currentLine.startsWith("#") == true)
+        if (currentLine.startsWith(QLatin1String("#")) == true)
             continue;
 
         // Split the current entry and filter invalid entries
-        QStringList components = currentLine.split("\t", QString::SkipEmptyParts);
+        QStringList components = currentLine.split(QChar::Tabulation, Qt::SkipEmptyParts);
         if (components.count() != 2) {
             qWarning() << "Invalid entry.";
             continue;
         }
 
         // Split multiple filename suffixes for every mimetype
-        QStringList endings = components.at(1).split(" ", QString::SkipEmptyParts);
+        QStringList endings = components.at(1).split(QChar::Space, Qt::SkipEmptyParts);
         QString mimeType = components.at(0);
 
         foreach (QString ending, endings) {

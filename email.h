@@ -45,6 +45,5 @@ private:
     MimeTypeManager* mimeTypes;
 };
 
-}
 
 #endif // EMAIL_H
