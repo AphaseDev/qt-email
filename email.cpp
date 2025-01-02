@@ -34,8 +34,10 @@ void Email::openInDefaultProgram()
 {
     QString email = QStringLiteral("Content-Type: multipart/alternative; boundary=\"BitshiftDynamicsMailerBoundary\"\r\n");
 
-    // Add sender information
+    // Field used by Microsoft Outlook Express to designate that a message is currently being authored (@link https://stackoverflow.com/questions/64232710/is-the-flag-x-unsent-still-working-to-save-and-open-a-eml-file-as-a-draft)
+    email.append(QLatin1String("X-Unsent:1\r\n"));
 
+    // Add sender information
 
     // Add receiver information
     email.append(QLatin1String("To: "));
@@ -49,8 +51,6 @@ void Email::openInDefaultProgram()
 
     // Add mime version
     email.append(QLatin1String("Mime-Version: 1.0 BitshiftDynamics Mailer\r\n\r\n"));
-    // Field used by Microsoft Outlook Express to designate that a message is currently being authored
-    email.append(QLatin1String("X-Unsent:1"));
 
     // Add body
     email.append(QLatin1String("--BitshiftDynamicsMailerBoundary\r\n"));
